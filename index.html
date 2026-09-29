@@ -316,7 +316,7 @@ function tabDebrief(s){
   const d=s.debrief;
   return `<div class="card">
     <h3>Quick Debrief</h3>
-    <div class="sub">Just enough to capture the moment — the full write-up can wait for the printed pages.</div>
+    <div class="sub">Just enough to capture the moment.</div>
     <div class="field"><label>Result</label><input type="text" value="${esc(d.result)}" oninput="updateField('${s.id}','debrief.result',this.value)"></div>
     <div class="field"><label>Horse felt</label>${pills(s.id,'debrief.horseFelt','horseFelt',['Great','Good','Okay','Difficult'],d.horseFelt)}</div>
     <div class="field"><label>I felt</label>${pills(s.id,'debrief.riderFelt','riderFelt',['Great','Good','Nervous','Frustrated'],d.riderFelt)}</div>
