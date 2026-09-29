@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Clear Round — Show Day Mode</title>
+<style>
+:root{
+  --cream:#F5F0E7; --green:#26382F; --brown:#4A382D; --gold:#B29A63; --sage:#DCE1D8;
+  --ink:#252522; --surface:#FFFCF7; --border:#D8CFB8; --pen:#8C8A80;
+  --bg:var(--cream); --card:var(--surface); --text:var(--ink); --text-soft:var(--brown);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#1B2620; --card:#233129; --text:#F5F0E7; --text-soft:#D9CBB0; --border:#3A4A40; --sage:#33443A; --surface:#233129; }
+}
+:root[data-theme="dark"]{ --bg:#1B2620; --card:#233129; --text:#F5F0E7; --text-soft:#D9CBB0; --border:#3A4A40; --sage:#33443A; --surface:#233129; }
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:700;margin:0;color:var(--green);}
+:root[data-theme="dark"] h1, :root[data-theme="dark"] h2, :root[data-theme="dark"] h3{color:#EDE6D6;}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) h1, :root:not([data-theme="light"]) h2, :root:not([data-theme="light"]) h3{color:#EDE6D6;} }
+#app{max-width:480px;margin:0 auto;min-height:100%;padding:18px 16px 90px;}
+.eyebrow{font-size:11px;letter-spacing:2px;color:var(--gold);font-weight:600;text-transform:uppercase;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.iconbtn{background:none;border:1px solid var(--border);color:var(--text-soft);border-radius:10px;padding:7px 11px;font-family:'Montserrat';font-size:13px;cursor:pointer;}
+.iconbtn:active{background:var(--sage);}
+h1.title{font-size:26px;margin-top:2px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+.card.sage{background:var(--sage);}
+.card h3{font-size:19px;margin-bottom:10px;}
+.field{margin-bottom:11px;}
+.field label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-soft);margin-bottom:4px;font-weight:600;}
+input[type=text],input[type=time],input[type=date],textarea{
+  width:100%;font-family:'Montserrat';font-size:16px;color:var(--text);background:transparent;
+  border:none;border-bottom:1.5px solid var(--pen);padding:6px 2px;outline:none;
+}
+textarea{border:1.5px solid var(--border);border-radius:8px;padding:8px;resize:vertical;min-height:56px;background:var(--surface);}
+input:focus,textarea:focus{border-color:var(--green);}
+.check{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.check:last-child{border-bottom:none;}
+.check input[type=checkbox]{width:20px;height:20px;accent-color:var(--green);flex:none;}
+.check span{flex:1;font-size:15px;}
+.check input[type=time]{width:84px;font-size:14px;flex:none;text-align:right;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;}
+.pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px;}
+.pillrow input{position:absolute;opacity:0;width:0;height:0;}
+.pillrow label{border:1.5px solid var(--border);border-radius:20px;padding:7px 14px;font-size:13px;cursor:pointer;color:var(--text-soft);}
+.pillrow input:checked + label{background:var(--green);border-color:var(--green);color:var(--cream);}
+.classcard{border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;background:var(--surface);}
+.classcard .grid2{grid-template-columns:1fr 1fr 1fr;gap:0 8px;}
+.rm{float:right;background:none;border:none;color:var(--brown);font-size:12px;cursor:pointer;text-decoration:underline;}
+.addbtn{width:100%;border:1.5px dashed var(--gold);background:none;color:var(--brown);border-radius:10px;padding:10px;font-family:'Montserrat';font-size:14px;cursor:pointer;margin-top:2px;}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--border);
+  padding:6px calc(env(safe-area-inset-left,0px)+4px) calc(env(safe-area-inset-bottom,0px)+6px) calc(env(safe-area-inset-right,0px)+4px);
+  display:flex;overflow-x:auto;gap:2px;max-width:480px;margin:0 auto;}
+.tab{flex:1;min-width:64px;background:none;border:none;font-family:'Montserrat';font-size:10.5px;font-weight:600;
+  letter-spacing:.4px;color:var(--text-soft);padding:8px 2px 6px;border-radius:8px;cursor:pointer;text-transform:uppercase;}
+.tab.active{color:var(--green);background:var(--sage);}
+:root[data-theme="dark"] .tab.active{color:#EDE6D6;}
+.panel{background:var(--green);color:var(--cream);border-radius:14px;padding:16px;margin-bottom:14px;}
+.panel h3{color:var(--cream);font-size:18px;margin-bottom:10px;}
+.panel .check{border-bottom-color:rgba(245,240,231,.25);}
+.panel .check span{color:var(--cream);}
+/* Home / calendar */
+.calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.calhead button{background:none;border:1px solid var(--border);border-radius:8px;width:34px;height:34px;color:var(--text-soft);font-size:16px;cursor:pointer;}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;}
+.calgrid .dow{font-size:10px;color:var(--text-soft);letter-spacing:1px;padding-bottom:4px;}
+.calgrid .day{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  border-radius:8px;font-size:13px;cursor:pointer;color:var(--text);}
+.calgrid .day.empty{cursor:default;}
+.calgrid .day.today{border:1.5px solid var(--gold);}
+.calgrid .day.has::after{content:"";position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:var(--green);}
+:root[data-theme="dark"] .calgrid .day.has::after{background:var(--gold);}
+.calgrid .day:active{background:var(--sage);}
+.showrow{display:flex;justify-content:space-between;align-items:center;padding:12px 4px;border-bottom:1px solid var(--border);cursor:pointer;}
+.showrow:last-child{border-bottom:none;}
+.showrow .nm{font-weight:600;font-size:15px;}
+.showrow .dt{font-size:12px;color:var(--text-soft);}
+.newrow{display:flex;gap:8px;margin-bottom:14px;}
+.newrow input[type=date]{border:1px solid var(--border);border-radius:8px;padding:8px;background:var(--surface);flex:none;width:132px;}
+.newrow input[type=text]{border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--surface);flex:1;}
+.newrow button{border:none;background:var(--green);color:var(--cream);border-radius:8px;padding:8px 14px;font-family:'Montserrat';font-weight:600;font-size:13px;cursor:pointer;}
+.empty{text-align:center;color:var(--text-soft);font-size:13px;padding:20px 0;}
+.del{display:block;margin:6px auto 0;background:none;border:none;color:var(--brown);font-size:12px;text-decoration:underline;cursor:pointer;}
+.sub{font-size:12.5px;color:var(--text-soft);margin-top:-4px;margin-bottom:12px;}
+</style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#26382F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="The Clear Round">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+</head>
+<body>
+<div id="app"></div>
+<script>
+const K='clearround_shows_v1';
+const PLAN_ITEMS=['Arrive','Unload','Horse ready','Course walk','Tack up','Warm up','Class','Cool down','Load up','Home'];
+const HORSE_ITEMS=['Water','Feed','Tack','Boots','Number','Rug'];
+const RIDER_ITEMS=['Helmet','Gloves','Phone','Jacket','Number','Water'];
+const PACKED_ITEMS=['Horse','Tack','Rider','Grooming','Extras'];
+const TABS=[['show','Show'],['plan','Plan'],['checklist','Don\u2019t Forget'],['focus','Next Up'],['debrief','Debrief'],['end','Day End']];
+
+let state={view:'home',id:null,tab:'show',calY:new Date().getFullYear(),calM:new Date().getMonth()};
+
+function getShows(){ try{return JSON.parse(localStorage.getItem(K)||'[]');}catch(e){return [];} }
+function setShows(a){ try{localStorage.setItem(K,JSON.stringify(a));}catch(e){} }
+function findShow(id){ return getShows().find(s=>s.id===id); }
+function patchShow(id,fn){ const arr=getShows(); const s=arr.find(x=>x.id===id); if(!s)return; fn(s); setShows(arr); }
+function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
+
+function blankShow(date,name){
+  return {id:'s'+Date.now()+Math.random().toString(36).slice(2,6), date:date||todayStr(), name:name||'',
+    venue:'',horse:'',rider:'',classes:[{cls:'',height:'',start:''}],
+    plan:{}, checklist:{horse:{},rider:{},extras:['','','']}, focus:'',
+    debrief:{result:'',horseFelt:'',riderFelt:'',wentWell:'',remember:'',nextFocus:''},
+    end:{best:'',learned:'',dontForget:'',packed:{}}};
+}
+function createShow(date,name){ const s=blankShow(date,name); const arr=getShows(); arr.push(s); setShows(arr); return s.id; }
+function deleteShow(id){ if(!confirm('Delete this show record? This can\u2019t be undone.'))return; setShows(getShows().filter(s=>s.id!==id)); goHome(); }
+
+function openShow(id){ state.view='editor'; state.id=id; state.tab='show'; render(); }
+function goHome(){ state.view='home'; render(); }
+function setTab(t){ state.tab=t; render(); }
+
+function esc(s){ return (s||'').replace(/"/g,'&quot;'); }
+
+// ---------- HOME / CALENDAR ----------
+function monthMatrix(y,m){
+  const first=new Date(y,m,1); const startDow=first.getDay();
+  const days=new Date(y,m+1,0).getDate();
+  const cells=[]; for(let i=0;i<startDow;i++)cells.push(null);
+  for(let d=1;d<=days;d++)cells.push(d);
+  while(cells.length%7!==0)cells.push(null);
+  return cells;
+}
+function fmtDate(iso){ const [y,m,d]=iso.split('-'); const dt=new Date(+y,+m-1,+d);
+  return dt.toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+
+function renderHome(){
+  const shows=getShows().sort((a,b)=>a.date<b.date?1:-1);
+  const byDate={}; shows.forEach(s=>{ (byDate[s.date]=byDate[s.date]||[]).push(s); });
+  const cells=monthMatrix(state.calY,state.calM);
+  const monthName=new Date(state.calY,state.calM,1).toLocaleDateString(undefined,{month:'long',year:'numeric'});
+  const today=todayStr();
+  const dows=['S','M','T','W','T','F','S'];
+  let calHtml=`<div class="calhead"><button onclick="prevMonth()">\u2039</button><div class="eyebrow" style="color:var(--text-soft)">${monthName}</div><button onclick="nextMonth()">\u203a</button></div><div class="calgrid">`;
+  dows.forEach(d=>calHtml+=`<div class="dow">${d}</div>`);
+  cells.forEach(d=>{
+    if(d===null){calHtml+='<div class="day empty"></div>';return;}
+    const iso=`${state.calY}-${String(state.calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const has=byDate[iso]?'has':''; const isToday=iso===today?'today':'';
+    calHtml+=`<div class="day ${has} ${isToday}" onclick="dayClick('${iso}')">${d}</div>`;
+  });
+  calHtml+='</div>';
+
+  const upcoming=shows.filter(s=>s.date>=today).sort((a,b)=>a.date<b.date?-1:1);
+  const past=shows.filter(s=>s.date<today);
+  function rows(list){
+    if(!list.length) return '<div class="empty">Nothing here yet.</div>';
+    return list.map(s=>`<div class="showrow" onclick="openShow('${s.id}')"><div><div class="nm">${esc(s.name)||'Untitled show'}</div><div class="dt">${esc(s.venue)||''}</div></div><div class="dt">${fmtDate(s.date)}</div></div>`).join('');
+  }
+
+  document.getElementById('app').innerHTML=`
+    <div class="eyebrow">The Clear Round</div>
+    <h1 class="title">Show Day Mode</h1>
+    <div class="sub">Plan it at home. Open it at the show.</div>
+    <div class="newrow">
+      <input type="date" id="newDate" value="${today}">
+      <input type="text" id="newName" placeholder="Show name">
+      <button onclick="quickCreate()">+ New</button>
+    </div>
+    <div class="card">${calHtml}</div>
+    <div class="card"><h3 style="font-size:16px;margin-bottom:6px;">Upcoming</h3>${rows(upcoming)}</div>
+    <div class="card"><h3 style="font-size:16px;margin-bottom:6px;">Past</h3>${rows(past)}</div>
+  `;
+}
+function prevMonth(){ state.calM--; if(state.calM<0){state.calM=11;state.calY--;} render(); }
+function nextMonth(){ state.calM++; if(state.calM>11){state.calM=0;state.calY++;} render(); }
+function dayClick(iso){
+  const shows=getShows().filter(s=>s.date===iso);
+  if(shows.length===1){ openShow(shows[0].id); }
+  else if(shows.length>1){ openShow(shows[0].id); }
+  else { const id=createShow(iso,''); openShow(id); }
+}
+function quickCreate(){
+  const date=document.getElementById('newDate').value||todayStr();
+  const name=document.getElementById('newName').value||'';
+  const id=createShow(date,name); openShow(id);
+}
+
+// ---------- EDITOR ----------
+function updateField(id,path,value){
+  patchShow(id,s=>{ const parts=path.split('.'); let o=s; for(let i=0;i<parts.length-1;i++)o=o[parts[i]]; o[parts[parts.length-1]]=value; });
+}
+function updateClass(id,idx,field,value){ patchShow(id,s=>{ s.classes[idx][field]=value; }); }
+function addClass(id){ patchShow(id,s=>s.classes.push({cls:'',height:'',start:''})); render(); }
+function removeClass(id,idx){ patchShow(id,s=>s.classes.splice(idx,1)); render(); }
+function togglePlan(id,item,checked){ patchShow(id,s=>{ s.plan[item]=s.plan[item]||{}; s.plan[item].done=checked; }); }
+function planTime(id,item,val){ patchShow(id,s=>{ s.plan[item]=s.plan[item]||{}; s.plan[item].time=val; }); }
+function toggleCheck(id,group,item,checked){ patchShow(id,s=>{ s.checklist[group][item]=checked; }); }
+function extraVal(id,idx,val){ patchShow(id,s=>{ s.checklist.extras[idx]=val; }); }
+function togglePacked(id,item,checked){ patchShow(id,s=>{ s.end.packed[item]=checked; }); }
+
+function tabsHtml(){
+  return `<div class="tabs">${TABS.map(([k,l])=>`<button class="tab ${state.tab===k?'active':''}" onclick="setTab('${k}')">${l}</button>`).join('')}</div>`;
+}
+
+function tabShow(s){
+  let classHtml=s.classes.map((c,i)=>`
+    <div class="classcard">
+      ${s.classes.length>1?`<button class="rm" onclick="removeClass('${s.id}',${i})">remove</button>`:''}
+      <div style="font-size:11px;letter-spacing:1px;color:var(--gold);font-weight:600;margin-bottom:6px;">CLASS ${i+1}</div>
+      <div class="grid2">
+        <div class="field"><label>Class</label><input type="text" value="${esc(c.cls)}" oninput="updateClass('${s.id}',${i},'cls',this.value)"></div>
+        <div class="field"><label>Height</label><input type="text" value="${esc(c.height)}" oninput="updateClass('${s.id}',${i},'height',this.value)"></div>
+        <div class="field"><label>Start</label><input type="text" value="${esc(c.start)}" placeholder="e.g. 10:30" oninput="updateClass('${s.id}',${i},'start',this.value)"></div>
+      </div>
+    </div>`).join('');
+  return `
+    <div class="card">
+      <h3>Today's Show</h3>
+      <div class="field"><label>Show</label><input type="text" value="${esc(s.name)}" oninput="updateField('${s.id}','name',this.value)"></div>
+      <div class="field"><label>Venue</label><input type="text" value="${esc(s.venue)}" oninput="updateField('${s.id}','venue',this.value)"></div>
+      <div class="field"><label>Date</label><input type="date" value="${s.date}" oninput="updateField('${s.id}','date',this.value)"></div>
+      <div class="grid2">
+        <div class="field"><label>Horse</label><input type="text" value="${esc(s.horse)}" oninput="updateField('${s.id}','horse',this.value)"></div>
+        <div class="field"><label>Rider</label><input type="text" value="${esc(s.rider)}" oninput="updateField('${s.id}','rider',this.value)"></div>
+      </div>
+    </div>
+    <div class="card"><h3>Today's Classes</h3>${classHtml}<button class="addbtn" onclick="addClass('${s.id}')">+ Add another class</button></div>
+    <button class="del" onclick="deleteShow('${s.id}')">Delete this show record</button>
+  `;
+}
+function tabPlan(s){
+  const rows=PLAN_ITEMS.map(item=>{ const p=s.plan[item]||{}; return `
+    <div class="check">
+      <input type="checkbox" ${p.done?'checked':''} onchange="togglePlan('${s.id}','${item}',this.checked)">
+      <span>${item}</span>
+      <input type="time" value="${p.time||''}" oninput="planTime('${s.id}','${item}',this.value)">
+    </div>`;}).join('');
+  return `<div class="card"><h3>Today's Plan</h3>${rows}</div>`;
+}
+function tabChecklist(s){
+  const horse=HORSE_ITEMS.map(i=>`<div class="check"><input type="checkbox" ${s.checklist.horse[i]?'checked':''} onchange="toggleCheck('${s.id}','horse','${i}',this.checked)"><span>${i}</span></div>`).join('');
+  const rider=RIDER_ITEMS.map(i=>`<div class="check"><input type="checkbox" ${s.checklist.rider[i]?'checked':''} onchange="toggleCheck('${s.id}','rider','${i}',this.checked)"><span>${i}</span></div>`).join('');
+  const extras=s.checklist.extras.map((v,i)=>`<div class="field"><input type="text" placeholder="Add your own" value="${esc(v)}" oninput="extraVal('${s.id}',${i},this.value)"></div>`).join('');
+  return `<div class="card sage"><h3>Horse</h3>${horse}</div><div class="card sage"><h3>Rider</h3>${rider}</div><div class="card"><h3>Our Extras</h3>${extras}</div>`;
+}
+function tabFocus(s){
+  const last=s.classes[s.classes.length-1]||{};
+  const before=['Tack checked','Helmet','Gloves','Number','Course walked','Warm-up'];
+  const checks=before.map(i=>`<div class="check"><input type="checkbox" ${s.checklist.horse['bfg_'+i]?'checked':''} onchange="toggleCheck('${s.id}','horse','bfg_${i}',this.checked)"><span>${i}</span></div>`).join('');
+  return `
+    <div class="card"><h3>Next Up</h3>
+      <div class="grid2">
+        <div class="field"><label>Horse</label><input type="text" value="${esc(s.horse)}" oninput="updateField('${s.id}','horse',this.value)"></div>
+        <div class="field"><label>Rider</label><input type="text" value="${esc(s.rider)}" oninput="updateField('${s.id}','rider',this.value)"></div>
+        <div class="field"><label>Class</label><input type="text" value="${esc(last.cls||'')}" readonly style="opacity:.7"></div>
+        <div class="field"><label>Start</label><input type="text" value="${esc(last.start||'')}" readonly style="opacity:.7"></div>
+      </div>
+    </div>
+    <div class="card sage"><h3>Before I Go In</h3>${checks}</div>
+    <div class="card"><h3>My Focus</h3><div class="field"><label>Today I want to remember</label><textarea oninput="updateField('${s.id}','focus',this.value)">${esc(s.focus)}</textarea></div></div>
+  `;
+}
+function pills(id,path,name,options,val){
+  return `<div class="pillrow">${options.map(o=>`<input type="radio" id="${name}-${o}" name="${name}" value="${o}" ${val===o?'checked':''} onchange="updateField('${id}','${path}','${o}')"><label for="${name}-${o}">${o}</label>`).join('')}</div>`;
+}
+function tabDebrief(s){
+  const d=s.debrief;
+  return `<div class="card">
+    <h3>Quick Debrief</h3>
+    <div class="sub">Just enough to capture the moment — the full write-up can wait for the printed pages.</div>
+    <div class="field"><label>Result</label><input type="text" value="${esc(d.result)}" oninput="updateField('${s.id}','debrief.result',this.value)"></div>
+    <div class="field"><label>Horse felt</label>${pills(s.id,'debrief.horseFelt','horseFelt',['Great','Good','Okay','Difficult'],d.horseFelt)}</div>
+    <div class="field"><label>I felt</label>${pills(s.id,'debrief.riderFelt','riderFelt',['Great','Good','Nervous','Frustrated'],d.riderFelt)}</div>
+    <div class="field"><label>One thing that went well</label><textarea oninput="updateField('${s.id}','debrief.wentWell',this.value)">${esc(d.wentWell)}</textarea></div>
+    <div class="field"><label>One thing to remember</label><textarea oninput="updateField('${s.id}','debrief.remember',this.value)">${esc(d.remember)}</textarea></div>
+    <div class="field"><label>Next focus</label><textarea oninput="updateField('${s.id}','debrief.nextFocus',this.value)">${esc(d.nextFocus)}</textarea></div>
+  </div>`;
+}
+function tabEnd(s){
+  const e=s.end;
+  const packed=PACKED_ITEMS.map(i=>`<div class="check"><input type="checkbox" ${e.packed[i]?'checked':''} onchange="togglePacked('${s.id}','${i}',this.checked)"><span>${i}</span></div>`).join('');
+  return `
+    <div class="card">
+      <h3>Show Day Complete</h3>
+      <div class="field"><label>Today's best moment</label><textarea oninput="updateField('${s.id}','end.best',this.value)">${esc(e.best)}</textarea></div>
+      <div class="field"><label>Something we learned</label><textarea oninput="updateField('${s.id}','end.learned',this.value)">${esc(e.learned)}</textarea></div>
+      <div class="field"><label>Don't forget for next time</label><textarea oninput="updateField('${s.id}','end.dontForget',this.value)">${esc(e.dontForget)}</textarea></div>
+    </div>
+    <div class="panel"><h3>Packed?</h3>${packed}<div style="text-align:center;margin-top:10px;font-family:'Cormorant Garamond';font-size:17px;">Ready for home.</div></div>
+  `;
+}
+
+function renderEditor(){
+  const s=findShow(state.id);
+  if(!s){ goHome(); return; }
+  const body={show:tabShow,plan:tabPlan,checklist:tabChecklist,focus:tabFocus,debrief:tabDebrief,end:tabEnd}[state.tab](s);
+  document.getElementById('app').innerHTML=`
+    <div class="topbar"><button class="iconbtn" onclick="goHome()">\u2039 All shows</button></div>
+    <div class="eyebrow">${fmtDate(s.date)}</div>
+    <h1 class="title">${esc(s.name)||'Untitled show'}</h1>
+    <div class="sub">${esc(s.venue)||'Add a venue on the Show tab'}</div>
+    ${body}
+    ${tabsHtml()}
+  `;
+}
+
+function render(){
+  if(state.view==='home') renderHome(); else renderEditor();
+}
+render();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

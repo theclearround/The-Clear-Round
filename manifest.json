@@ -1,0 +1,19 @@
+{
+  "name": "The Clear Round \u2014 Show Day Mode",
+  "short_name": "The Clear Round",
+  "description": "Your digital show-day companion.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F0E7",
+  "theme_color": "#26382F",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
