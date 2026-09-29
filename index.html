@@ -97,8 +97,46 @@ input:focus,textarea:focus{border-color:var(--green);}
 <meta name="apple-mobile-web-app-title" content="The Clear Round">
 <link rel="icon" href="icon-512.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+#gatescreen{position:fixed;inset:0;z-index:9999;background:var(--cream);display:flex;align-items:center;justify-content:center;padding:24px;}
+#gatescreen.hidden{display:none;}
+#gatebox{max-width:320px;width:100%;text-align:center;}
+#gatebox h2{font-family:'Cormorant Garamond',serif;color:var(--green);font-size:26px;margin-bottom:6px;}
+#gatebox p{font-family:'Montserrat',sans-serif;color:var(--brown);font-size:13px;margin-bottom:16px;}
+#gatebox input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:16px;margin-bottom:10px;font-family:'Montserrat',sans-serif;box-sizing:border-box;}
+#gatebox button{width:100%;padding:10px;border:none;border-radius:8px;background:var(--green);color:var(--cream);font-family:'Montserrat',sans-serif;font-weight:600;font-size:14px;cursor:pointer;}
+#gateerr{color:#8a3b3b;font-size:12px;margin-top:8px;min-height:14px;}
+</style>
 </head>
 <body>
+<div id="gatescreen">
+  <div id="gatebox">
+    <h2>The Clear Round</h2>
+    <p>Enter your access code to open Show Day Mode.</p>
+    <input type="password" id="gatepw" placeholder="Access code" autocomplete="off">
+    <button onclick="checkGate()">Unlock</button>
+    <div id="gateerr"></div>
+  </div>
+</div>
+<script>
+const GATE_PASSWORD = "changeme"; // <-- change this to your own code
+(function(){
+  if(localStorage.getItem('cr_unlocked')==='1'){
+    document.getElementById('gatescreen').classList.add('hidden');
+  }
+  window.checkGate = function(){
+    const val = document.getElementById('gatepw').value;
+    if(val === GATE_PASSWORD){
+      localStorage.setItem('cr_unlocked','1');
+      document.getElementById('gatescreen').classList.add('hidden');
+    } else {
+      document.getElementById('gateerr').textContent = "That code isn't right — try again.";
+      document.getElementById('gatepw').value='';
+    }
+  };
+  document.getElementById('gatepw').addEventListener('keydown',function(e){ if(e.key==='Enter') checkGate(); });
+})();
+</script>
 <div id="app"></div>
 <script>
 const K='clearround_shows_v1';
